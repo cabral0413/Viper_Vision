@@ -32,13 +32,13 @@ import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
 
 const HomeScreen = ({navigation}) => {
   const features = [
-    {title: 'Take a Photo', onPress: () => navigation.navigate('')},
+    {title: 'Take a Photo', onPress: () => navigation.navigate('Camera')},
     {title: 'Photo Gallery', onPress: () => navigation.navigate('Gallery')},
-    {title: 'First Aid', onPress: () => navigation.navigate('FirstAidScreen')},
+    {title: 'First Aid', onPress: () => navigation.navigate('FirstAid')},
     {title: 'Nearest Hospital', onPress: () => navigation.navigate('Hospital')},
     {
       title: 'Snake Catchers',
-      onPress: () => navigation.navigate('SnakeCatchers'),
+      onPress: () => navigation.navigate('SnakeCatcher'),
     },
   ];
 

@@ -9,6 +9,7 @@ import FirstAidScreen from './screens/FirstAidScreen';
 import HosScreen from './screens/HosScreen';
 import SnakeCatcherScreen from './screens/SnakeCatcherScreen';
 import GalleryScreen from './screens/GalleryScreen';
+import ResultsScreen from './screens/ResultsScreen';
 
 const Stack = createStackNavigator();
 
@@ -23,8 +24,7 @@ const Navigation = () => {
         <Stack.Screen name="Hospital" component={HosScreen} />
         <Stack.Screen name="SnakeCatcher" component={SnakeCatcherScreen} />
         <Stack.Screen name="Gallery" component={GalleryScreen} />
-
-        
+        <Stack.Screen name="Results" component={ResultsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
