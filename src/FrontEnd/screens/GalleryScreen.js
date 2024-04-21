@@ -1,4 +1,4 @@
-/*import React, {useState} from 'react';
+import React, {useState} from 'react';
 import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {useNavigation} from '@react-navigation/native'; // Import useNavigation hook
@@ -72,8 +72,9 @@ const styles = StyleSheet.create({
   },
 });
 
-export default GalleryScreen;*/
-
+export default GalleryScreen;
+/*
+// GalleryScreen.js
 import React, {useState} from 'react';
 import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
 import {launchImageLibrary} from 'react-native-image-picker';
@@ -92,17 +93,31 @@ const GalleryScreen = () => {
     };
 
     launchImageLibrary(options, response => {
-      if (response.didCancel) {
-        console.log('User cancelled selecting an image');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else {
-        const source = {uri: response.assets[0].uri};
-        setSelectedImage(source);
-        // Pass the image to the Results screen
-        navigation.navigate('Results', {image: source});
+      if (!response.didCancel && !response.error) {
+        setSelectedImage({uri: response.assets[0].uri});
+        sendImageToBackend(response.assets[0].uri);
       }
     });
+  };
+
+  const sendImageToBackend = async imageUri => {
+    const formData = new FormData();
+    formData.append('image', {
+      uri: imageUri,
+      type: 'image/jpeg',
+      name: 'image.jpg',
+    });
+
+    try {
+      const response = await fetch('http://127.0.0.1:5000/classify', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+      navigation.navigate('Results', {results: data.predictions});
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
   return (
@@ -139,4 +154,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default GalleryScreen;
+export default GalleryScreen;*/

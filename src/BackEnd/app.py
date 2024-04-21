@@ -6,7 +6,7 @@ import numpy as np
 app = Flask(__name__)
 
 # Load the MobileNetV2 model
-model = load_model('models/mobilenetv2.h5')
+model = load_model('models/MobileNetv2.h5')
 
 # Define a function to preprocess the image
 def preprocess_image(img):
@@ -57,4 +57,5 @@ def classify():
     return jsonify({'predictions': formatted_predictions})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Run the Flask app on localhost with port 5000
+    app.run(host='192.168.1.5', port=5000, debug=True)
