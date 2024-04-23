@@ -1,9 +1,3 @@
-/*import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
-
-const SnakeCatcherScreen = ({navigation}) => {};
-export default SnakeCatcherScreen;*/
-
 import React, {useState} from 'react';
 import {
   View,
@@ -14,8 +8,9 @@ import {
   StyleSheet,
   Image,
 } from 'react-native';
+import CustomHeader from '../components/CustomHeader'; // Import CustomHeader component
 
-const SnakeCatcherScreen = () => {
+const SnakeCatcherScreen = ({navigation}) => {
   const [searchText, setSearchText] = useState('');
   const [allDistricts, setAllDistricts] = useState([
     'Colombo',
@@ -211,6 +206,11 @@ const SnakeCatcherScreen = () => {
 
   return (
     <View style={styles.container}>
+      <CustomHeader
+        title="Snake Catchers"
+        navigation={navigation}
+        showBackButton={true}
+      />
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
@@ -247,8 +247,10 @@ const SnakeCatcherScreen = () => {
             data={snakeCatchers}
             renderItem={({item}) => (
               <View style={styles.snakeCatcherItem}>
-                <Text>Name: {item.name}</Text>
-                <Text>Contact: {item.contact}</Text>
+                <Text style={styles.snakeCatcherText}>Name: {item.name}</Text>
+                <Text style={styles.snakeCatcherText}>
+                  Contact: {item.contact}
+                </Text>
               </View>
             )}
             keyExtractor={(item, index) => index.toString()}
@@ -262,23 +264,23 @@ const SnakeCatcherScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: 'black', // Set background color to black
+    //padding: 20,
+    backgroundColor: 'white', // Set background color to black
   },
   searchContainer: {
-    borderRadius:30,
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
     position: 'relative', // Make the container relative for positioning
+    paddingHorizontal: 30, // Add horizontal padding
+    borderRadius: 20, // Add border radius
+    borderWidth: 1, // Add border width
+    borderColor: 'gray', // Set border color
   },
   searchInput: {
     flex: 1,
     height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    paddingHorizontal: 10,
-    color: 'white', // Set text color to white
+    color: 'black', // Set text color to white
   },
   clearIconContainer: {
     position: 'absolute',
@@ -301,26 +303,34 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderBottomWidth: 1,
     borderBottomColor: 'lightgray',
-    color: 'white', // Set text color to white
+    color: 'black', // Set text color to white
   },
   selectedDistrictContainer: {
     marginTop: 20,
   },
   selectedDistrictText: {
     fontWeight: 'bold',
-    color: 'white',
+    color: 'black',
+    marginLeft: 15,
   },
   snakeCatcherHeader: {
     marginTop: 10,
     fontWeight: 'bold',
-    color: 'white', // Set text color to white
+    color: 'black', // Set text color to white
+    marginLeft: 15,
   },
   snakeCatcherItem: {
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderBottomWidth: 1,
     borderBottomColor: 'lightgray',
-    color: 'white', // Set text color to white
+    borderColor: 'white', // Set border color to white
+    color: 'black', // Set text color to white
+    marginLeft: 30,
+  },
+  // Add a new style for the text color
+  snakeCatcherText: {
+    color: 'black', // Set text color to white
   },
 });
 

@@ -1,43 +1,37 @@
-/*import React, {Component} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
-
-class App extends Component {
-  render() {
-    return (
-      <View style={styles.view}>
-        <Text style={styles.bodyText}>Hello World!</Text>
-      </View>
-    );
-  }
-}
-
-const styles = StyleSheet.create({
-  view: {
-    flex: 1,
-    backgroundColor: 'white',
-    justifyConten: 'center',
-    alignItems: 'center',
-  },
-  bodyText: {
-    fontSize: 20,
-    color: 'black',
-  },
-});
-
-export default App;
-*/
-
 import React from 'react';
 import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
+import CustomHeader from '../components/CustomHeader'; // Import CustomHeader component
+import cameraIcon from '../assets/cam.png';
+import galleryIcon from '../assets/gallery1.png';
+import firstAidIcon from '../assets/first-aid1.png';
+import hospitalIcon from '../assets/map1.png';
+import snakeCatcherIcon from '../assets/snake1.png';
 
 const HomeScreen = ({navigation}) => {
   const features = [
-    {title: 'Take a Photo', onPress: () => navigation.navigate('Camera')},
-    {title: 'Photo Gallery', onPress: () => navigation.navigate('Gallery')},
-    {title: 'First Aid', onPress: () => navigation.navigate('FirstAid')},
-    {title: 'Nearest Hospital', onPress: () => navigation.navigate('Hospital')},
+    {
+      title: 'Take a Photo',
+      icon: cameraIcon,
+      onPress: () => navigation.navigate('Camera'),
+    },
+    {
+      title: 'Photo Gallery',
+      icon: galleryIcon,
+      onPress: () => navigation.navigate('Gallery'),
+    },
+    {
+      title: 'First Aid',
+      icon: firstAidIcon,
+      onPress: () => navigation.navigate('FirstAid'),
+    },
+    {
+      title: 'Nearest Hospital',
+      icon: hospitalIcon,
+      onPress: () => navigation.navigate('Hospital'),
+    },
     {
       title: 'Snake Catchers',
+      icon: snakeCatcherIcon,
       onPress: () => navigation.navigate('SnakeCatcher'),
     },
   ];
@@ -48,6 +42,7 @@ const HomeScreen = ({navigation}) => {
       style={styles.featureContainer}
       onPress={feature.onPress}>
       <View style={styles.featureBox}>
+        <Image source={feature.icon} style={styles.featureIcon} />
         <Text style={styles.featureTitle}>{feature.title}</Text>
       </View>
     </TouchableOpacity>
@@ -55,11 +50,12 @@ const HomeScreen = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Image source={require('../assets/snake3.jpg')} style={styles.logo} />
-        <Text style={styles.title}>Viper Vision</Text>
-        {/* Additional header options can be added here */}
-      </View>
+      {/* Use CustomHeader component with title="Viper Vision" and showBackButton={false} */}
+      <CustomHeader
+        title="Viper Vision"
+        navigation={navigation}
+        showBackButton={false}
+      />
       <Text style={styles.heading}>Welcome to Snake Identifier</Text>
       <View style={styles.featuresContainer}>
         {features.map((feature, index) => renderFeature(feature, index))}
@@ -73,27 +69,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#CCCCCC',
-    backgroundColor: '#000000',
-  },
-  logo: {
-    width: 40,
-    height: 40,
-    marginRight: 10,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-  },
   heading: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     marginVertical: 20,
     marginLeft: 20,
@@ -101,24 +78,32 @@ const styles = StyleSheet.create({
   featuresContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'center',
+    justifyContent: 'space-around',
     paddingHorizontal: 10,
   },
   featureContainer: {
     width: '45%',
-    margin: '2.5%',
+    marginVertical: 10,
+    borderRadius: 20,
+    overflow: 'hidden',
+    elevation: 3,
+    backgroundColor: '#393737',
   },
   featureBox: {
-    backgroundColor: '#F5F5F5',
     height: 150,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 10,
+    padding: 10,
+  },
+  featureIcon: {
+    width: 50,
+    height: 50,
+    marginBottom: 10,
   },
   featureTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#4682B4',
+    color: '#FFFFFF',
   },
 });
 

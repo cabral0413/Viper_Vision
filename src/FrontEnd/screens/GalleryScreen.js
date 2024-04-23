@@ -2,6 +2,9 @@ import React, {useState} from 'react';
 import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {useNavigation} from '@react-navigation/native'; // Import useNavigation hook
+import CustomHeader from '../components/CustomHeader'; // Import CustomHeader component
+import galleryIcon from '../assets/gallery.png'; // Import gallery icon
+import detailsIcon from '../assets/details.png'; // Import details icon
 
 const GalleryScreen = () => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -36,12 +39,20 @@ const GalleryScreen = () => {
 
   return (
     <View style={styles.container}>
+      {/* Use CustomHeader component with title="Gallery" and showBackButton={true} */}
+      <CustomHeader
+        title="Gallery"
+        showBackButton={true}
+        navigation={navigation}
+      />
       <TouchableOpacity style={styles.button} onPress={selectImage}>
+        <Image source={galleryIcon} style={styles.buttonIcon} />
         <Text style={styles.buttonText}>Choose Image from Gallery</Text>
       </TouchableOpacity>
       {selectedImage && <Image source={selectedImage} style={styles.image} />}
       {selectedImage && (
         <TouchableOpacity style={styles.button} onPress={showResults}>
+          <Image source={detailsIcon} style={styles.buttonIcon} />
           <Text style={styles.buttonText}>Show Classification Results</Text>
         </TouchableOpacity>
       )}
@@ -53,17 +64,25 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    //justifyContent: 'center',
   },
   button: {
-    backgroundColor: '#4682B4',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#393737',
     padding: 10,
-    borderRadius: 5,
-    marginTop: 20,
+    borderRadius: 20,
+    marginTop: 60,
   },
   buttonText: {
     color: '#FFFFFF',
     fontSize: 16,
+    marginLeft: 10,
+  },
+  buttonIcon: {
+    width: 24,
+    height: 24,
+    tintColor: '#FFFFFF',
   },
   image: {
     marginTop: 20,
@@ -73,85 +92,3 @@ const styles = StyleSheet.create({
 });
 
 export default GalleryScreen;
-/*
-// GalleryScreen.js
-import React, {useState} from 'react';
-import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
-import {launchImageLibrary} from 'react-native-image-picker';
-import {useNavigation} from '@react-navigation/native';
-
-const GalleryScreen = () => {
-  const [selectedImage, setSelectedImage] = useState(null);
-  const navigation = useNavigation();
-
-  const selectImage = () => {
-    const options = {
-      mediaType: 'photo',
-      quality: 0.5,
-      maxWidth: 800,
-      maxHeight: 600,
-    };
-
-    launchImageLibrary(options, response => {
-      if (!response.didCancel && !response.error) {
-        setSelectedImage({uri: response.assets[0].uri});
-        sendImageToBackend(response.assets[0].uri);
-      }
-    });
-  };
-
-  const sendImageToBackend = async imageUri => {
-    const formData = new FormData();
-    formData.append('image', {
-      uri: imageUri,
-      type: 'image/jpeg',
-      name: 'image.jpg',
-    });
-
-    try {
-      const response = await fetch('http://127.0.0.1:5000/classify', {
-        method: 'POST',
-        body: formData,
-      });
-      const data = await response.json();
-      navigation.navigate('Results', {results: data.predictions});
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
-
-  return (
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.button} onPress={selectImage}>
-        <Text style={styles.buttonText}>Choose Image from Gallery</Text>
-      </TouchableOpacity>
-      {selectedImage && <Image source={selectedImage} style={styles.image} />}
-    </View>
-  );
-};
-
-// Styles
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  button: {
-    backgroundColor: 'blue',
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 20,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 18,
-  },
-  image: {
-    width: 300,
-    height: 300,
-    resizeMode: 'cover',
-  },
-});
-
-export default GalleryScreen;*/

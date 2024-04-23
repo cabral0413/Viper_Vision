@@ -1,6 +1,9 @@
 import React, {useState} from 'react';
 import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
 import {launchCamera} from 'react-native-image-picker';
+import CustomHeader from '../components/CustomHeader'; // Import CustomHeader component
+import cameraIcon from '../assets/cam.png'; // Import camera icon
+import detailsIcon from '../assets/details.png'; // Import details icon
 
 const CameraScreen = ({navigation}) => {
   const [image, setImage] = useState(null);
@@ -28,18 +31,26 @@ const CameraScreen = ({navigation}) => {
   };
 
   const navigateToResults = () => {
-    navigation.navigate('Results');
+    navigation.navigate('Results', {image});
   };
 
   return (
     <View style={styles.container}>
+      {/* Use CustomHeader component with title="Camera" and showBackButton={true} */}
+      <CustomHeader
+        title="Camera"
+        navigation={navigation}
+        showBackButton={true}
+      />
       <TouchableOpacity style={styles.button} onPress={takePicture}>
+        <Image source={cameraIcon} style={styles.buttonIcon} />
         <Text style={styles.buttonText}>Take a Photo</Text>
       </TouchableOpacity>
       {image && <Image source={image} style={styles.image} />}
       {image && (
         <TouchableOpacity style={styles.button} onPress={navigateToResults}>
-          <Text style={styles.buttonText}>Show Classification Results</Text>
+          <Image source={detailsIcon} style={styles.buttonIcon} />
+          <Text style={styles.buttonText}>Show Details</Text>
         </TouchableOpacity>
       )}
     </View>
@@ -50,103 +61,31 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    // justifyContent: 'center',
   },
   button: {
-    backgroundColor: '#4682B4',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#393737',
     padding: 10,
-    borderRadius: 5,
-    marginTop: 20,
+    borderRadius: 20,
+    marginTop: 80,
   },
   buttonText: {
     color: '#FFFFFF',
     fontSize: 16,
+    marginLeft: 10,
+  },
+  buttonIcon: {
+    width: 24,
+    height: 24,
+    tintColor: '#FFFFFF',
   },
   image: {
-    marginTop: 20,
+    marginTop: 40,
     width: 200,
     height: 200,
   },
 });
 
 export default CameraScreen;
-
-
-// CameraScreen.js
-/*import React, {useState} from 'react';
-import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
-import {launchCamera} from 'react-native-image-picker';
-
-const CameraScreen = ({navigation}) => {
-  const [image, setImage] = useState(null);
-
-  const takePicture = () => {
-    const options = {
-      mediaType: 'photo',
-      quality: 0.5,
-      maxWidth: 800,
-      maxHeight: 600,
-    };
-
-    launchCamera(options, response => {
-      if (!response.didCancel && !response.error) {
-        sendImageToBackend(response.assets[0].uri);
-      }
-    });
-  };
-
-  const sendImageToBackend = async imageUri => {
-    const formData = new FormData();
-    formData.append('image', {
-      uri: imageUri,
-      type: 'image/jpeg',
-      name: 'image.jpg',
-    });
-
-    try {
-      const response = await fetch('http://127.0.0.1:5000/classify', {
-        method: 'POST',
-        body: formData,
-      });
-      const data = await response.json();
-      navigation.navigate('Results', {results: data.predictions});
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
-
-  return (
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.button} onPress={takePicture}>
-        <Text style={styles.buttonText}>Take a Photo</Text>
-      </TouchableOpacity>
-      {image && <Image source={image} style={styles.image} />}
-    </View>
-  );
-};
-
-// Styles
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  button: {
-    backgroundColor: 'blue',
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 20,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 18,
-  },
-  image: {
-    width: 300,
-    height: 300,
-    resizeMode: 'cover',
-  },
-});
-
-export default CameraScreen;*/

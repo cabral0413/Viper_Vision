@@ -42,10 +42,9 @@ const SplashScreen = ({navigation}) => {
     <View style={styles.container}>
       <View style={styles.contentContainer}>
         <Image
-          source={require('./assets/snake3.jpg')} // Replace with your snake icon
+          source={require('./assets/snake.jpg')} // Replace with your snake icon
           style={styles.snakeIcon}
         />
-        <Text style={styles.appName}>Viper Vision</Text>
         <ActivityIndicator size="large" color="#4682B4" style={styles.loader} />
       </View>
     </View>
@@ -63,16 +62,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   snakeIcon: {
-    width: 100,
-    height: 100,
+    width: 300,
+    height: 300,
     marginBottom: 20,
   },
-  appName: {
+  /*appName: {
     fontSize: 30,
     fontWeight: 'bold',
     marginBottom: 50,
     marginTop: 30,
-  },
+    color: 'white',
+  },*/
   loader: {
     marginTop: 20,
   },
