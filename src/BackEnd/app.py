@@ -1,50 +1,58 @@
-from flask import Flask, request, jsonify
-from tensorflow.keras.models import load_model
+from flask import Flask, request
+from ultralytics import YOLO
 from PIL import Image
-import numpy as np
 
 app = Flask(__name__)
 
-# Load the MobileNetV2 model (assuming it's in the 'models' folder)
-model = load_model('models/MobileNetv2.h5')
-
-# Define a function to preprocess the image
-def preprocess_image(img):
-  img = img.convert('RGB')  # Convert to RGB mode
-  img = img.resize((224, 224))  # Resize to match model input
-  img = np.array(img)  # Convert to numpy array
-  img = img / 255.0  # Normalize pixel values
-  img = np.expand_dims(img, axis=0)  # Add batch dimension
-  return img
-
-# Define a function to classify the image
-def classify_image(img):
-  img = preprocess_image(img)
-  prediction = model.predict(img)
-  return prediction
-
-# Define a function to get snake names, venom status, and image URLs
-def get_snake_info(prediction, top_n=2):
-  snake_names = ["Common Indian Krait", "Green Vine Snake", "Hump Nosed Viper", "Indian Cobra", "Python", "Russells Viper"]
-  venom_status = ["Highly-Venomous", "Non-Venomous", "Highly-Venomous", "Highly-Venomous", "Non-Venomous", "Highly-Venomous"]
-  frontend_base_url = request.host_url  # Get the base URL of the frontend
-  image_folder = 'assets/'  # Define the folder where snake images are stored (within frontend)
-  image_names = ['krait.jpg', 'VineSnake.jpg', 'PitViper.jpg', 'cobra.jpg', 'python.PNG', 'Russells_Viper.jpg']
-  image_paths = [frontend_base_url + image_folder + name for name in image_names]
-  top_indices = np.argsort(prediction)[0][-top_n:][::-1]
-  predictions = [{'snake_name': snake_names[i], 'probability': prediction[0][i], 'venom_status': venom_status[i], 'snake_image': image_paths[i]} for i in top_indices]
-  return predictions
-
 @app.route('/classify', methods=['POST'])
-def classify():
-  if 'image' not in request.files:
-    return jsonify({'error': 'No image found'})
-  img_file = request.files['image']
-  img = Image.open(img_file)
-  prediction = classify_image(img)
-  top_predictions = get_snake_info(prediction, top_n=2)
-  formatted_predictions = [{'snake_name': info['snake_name'], 'probability': '{:.1%}'.format(info['probability']), 'venom_status': info['venom_status'], 'snake_image': info['snake_image']} for info in top_predictions]
-  return jsonify({'predictions': formatted_predictions})
+def predict():
+    file = request.files['image']
+    img = Image.open(file.stream).convert("RGB")  # Ensure it's in RGB format
+    
+    model = YOLO('models/best.pt')  # Make sure the path is correct
+    results = model(img)  # Directly pass PIL image
+
+    # Check if any detections are made
+    if len(results) == 0:
+        return {'message': 'No objects detected in the image.'}
+    
+    # Assuming we're doing classification, let's find the top two classes if available
+    if len(results) >= 2:
+        top_classes = [(results[i].names[results[i].probs.top1], results[i].probs.top1conf.item()) for i in range(2)]
+    else:
+        top_classes = [(results[i].names[results[i].probs.top1], results[i].probs.top1conf.item()) for i in range(len(results))]
+    
+    # Determine venom status for each top class
+    top_venom_status = [get_venom_status(class_name) for class_name, _ in top_classes]
+    
+    # Format the probabilities as percentages with two decimal points
+    formatted_probs = ["{:.2%}".format(confidence) for _, confidence in top_classes]
+
+    # Check if confidence is below 70% for any top class
+    if any(confidence < 0.7 for _, confidence in top_classes):
+        return {'message': 'No snakes detected with sufficient confidence. Please upload a clearer photo.'}
+
+    return {'top_predictions': [{'class': class_name, 'probability': prob, 'venom_status': venom_status}
+                                for (class_name, _), prob, venom_status in zip(top_classes, formatted_probs, top_venom_status)]}
+
+def get_venom_status(class_name):
+    # Implement your logic to determine venom status based on the class name
+    # This could involve querying a database or using predefined mappings
+    # For example:
+    if class_name == 'Common Indian Krait':
+        return 'Venomous'
+    elif class_name == 'Python':
+        return 'Venomous'
+    elif class_name == 'Merremâs Hump â Nosed Viper':
+        return 'Venomous'
+    elif class_name == 'Green Vine Snake':
+        return 'Non-venomous'
+    elif class_name == 'Russellâs Viper':
+        return 'Venomous'
+    elif class_name == 'Indian Cobra':
+        return 'Venomous'
+    else:
+        return 'Unknown'
 
 if __name__ == '__main__':
-  app.run(host='192.168.1.5', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)

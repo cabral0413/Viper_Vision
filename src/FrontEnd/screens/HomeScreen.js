@@ -1,13 +1,35 @@
 import React from 'react';
 import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
+import {launchImageLibrary} from 'react-native-image-picker';
 import CustomHeader from '../components/CustomHeader'; // Import CustomHeader component
 import cameraIcon from '../assets/cam.png';
 import galleryIcon from '../assets/gallery1.png';
 import firstAidIcon from '../assets/first-aid1.png';
 import hospitalIcon from '../assets/map1.png';
 import snakeCatcherIcon from '../assets/snake1.png';
+import {useNavigation} from '@react-navigation/native';
 
-const HomeScreen = ({navigation}) => {
+const HomeScreen = () => {
+  const navigation = useNavigation();
+
+  const openGalleryAndNavigate = () => {
+    const options = {
+      mediaType: 'photo',
+      quality: 0.5,
+      maxWidth: 800,
+      maxHeight: 600,
+    };
+
+    launchImageLibrary(options, response => {
+      console.log('Response = ', response);
+
+      if (!response.didCancel && !response.error) {
+        const source = {uri: response.assets[0].uri};
+        navigation.navigate('Results', {image: source}); // Navigate to Results screen with selected image
+      }
+    });
+  };
+
   const features = [
     {
       title: 'Take a Photo',
@@ -17,7 +39,7 @@ const HomeScreen = ({navigation}) => {
     {
       title: 'Photo Gallery',
       icon: galleryIcon,
-      onPress: () => navigation.navigate('Gallery'),
+      onPress: openGalleryAndNavigate, // Updated onPress function to open gallery and navigate
     },
     {
       title: 'First Aid',
@@ -53,7 +75,6 @@ const HomeScreen = ({navigation}) => {
       {/* Use CustomHeader component with title="Viper Vision" and showBackButton={false} */}
       <CustomHeader
         title="Viper Vision"
-        navigation={navigation}
         showBackButton={false}
       />
       <Text style={styles.heading}>Welcome to Snake Identifier</Text>

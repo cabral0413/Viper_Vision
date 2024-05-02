@@ -1,11 +1,32 @@
-import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import CustomHeader from '../components/CustomHeader'; // Import CustomHeader component
 
-const ResultsScreen = ({route}) => {
-  const {image} = route.params; // Use optional chaining and default empty object
-  // Get the image passed from the previous screen
+const ResultsScreen = ({ route }) => {
+  const { image } = route.params; // Use optional chaining and default empty object
   const [results, setResults] = useState(null); // State to store classification results
+  const [loading, setLoading] = useState(true); // State to track loading state
+  const [fetchError, setFetchError] = useState(null); // State to track fetch errors
+
+  // Function to get the image source based on snake class name
+  const getImageSource = className => {
+    switch (className) {
+      case 'Common Indian Krait':
+        return require('../assets/krait.jpg');
+      case 'Merremâs Hump â Nosed Viper':
+        return require('../assets/PitViper.jpeg');
+      case 'Indian Cobra':
+        return require('../assets/cobra.jpg');
+      case 'Python':
+        return require('../assets/python.jpeg');
+      case 'Green Vine Snake':
+        return require('../assets/VineSnake.jpg');
+      case 'Russellâs Viper':
+        return require('../assets/Russels_Viper.jpg');
+      default:
+        return null; // Return null if no image found
+    }
+  };
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -17,7 +38,7 @@ const ResultsScreen = ({route}) => {
           type: 'image/jpeg',
           name: 'image.jpg',
         });
-        const response = await fetch('http://192.168.1.5:5000/classify', {
+        const response = await fetch('http://192.168.8.197:5000/classify', {
           method: 'POST',
           headers: {
             'Content-Type': 'multipart/form-data',
@@ -25,9 +46,17 @@ const ResultsScreen = ({route}) => {
           body: formData,
         });
         const data = await response.json();
-        setResults(data.predictions); // Set the classification results
+        console.log('API Response:', data); // Log the API response
+        if (response.ok) {
+          setResults(data.top_predictions); // Set the classification results
+        } else {
+          setFetchError(data.message || 'Failed to fetch results.');
+        }
       } catch (error) {
         console.error('Error fetching results:', error);
+        setFetchError('Error fetching results. Please try again.');
+      } finally {
+        setLoading(false); // Set loading state to false
       }
     };
 
@@ -39,38 +68,31 @@ const ResultsScreen = ({route}) => {
     <View style={styles.container}>
       <CustomHeader title="Results" showBackButton={true} />
       <Text style={styles.heading}>Classification Results</Text>
-      {results ? (
-        <View>
-          {results.map((result, index) => (
-            <View key={index} style={styles.resultContainer}>
-              <Image
-                source={{uri: result.snake_image}}
-                style={styles.snakeImage}
-              />
-              <View style={styles.resultContent}>
-                <Text style={styles.snakeName}>
-                  {result.snake_name.toUpperCase()}
-                </Text>
-                <Text style={styles.accuracy}>
-                  Accuracy: {result.probability}
-                </Text>
-                <Text style={styles.venomStatus}>
-                  Venom Status: {result.venom_status}
-                </Text>
-                <View style={styles.buttonContainer}>
-                  <TouchableOpacity style={styles.button}>
-                    <Text style={styles.buttonText}>More Details</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.button}>
-                    <Text style={styles.buttonText}>First Aid Info</Text>
-                  </TouchableOpacity>
-                </View>
+      {loading ? (
+        <Text style={styles.Loader}>Loading results...</Text>
+      ) : fetchError ? (
+        <Text style={styles.errorText}>{fetchError}</Text>
+      ) : results && results.length > 0 ? (
+        results.map((result, index) => (
+          <View key={index} style={styles.resultContainer}>
+            <Image source={getImageSource(result.class)} style={styles.snakeImage} />
+            <View style={styles.resultContent}>
+              <Text style={styles.snakeName}>Snake Name: {result.class}</Text>
+              <Text style={styles.accuracy}>Probability: {result.probability}</Text>
+              <Text style={styles.venomStatus}>Venom Status: {result.venom_status}</Text>
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity style={styles.button}>
+                  <Text style={styles.buttonText}>More Details</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.button}>
+                  <Text style={styles.buttonText}>First Aid Info</Text>
+                </TouchableOpacity>
               </View>
             </View>
-          ))}
-        </View>
+          </View>
+        ))
       ) : (
-        <Text style={styles.Loader}>Loading results...</Text>
+        <Text style={styles.Loader}>No results found.</Text>
       )}
     </View>
   );
@@ -142,5 +164,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
 });
+
 
 export default ResultsScreen;

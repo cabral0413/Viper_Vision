@@ -1,16 +1,15 @@
 import React, {useState} from 'react';
 import {View, Text, TouchableOpacity, Image, StyleSheet} from 'react-native';
 import {launchImageLibrary} from 'react-native-image-picker';
-import {useNavigation} from '@react-navigation/native'; // Import useNavigation hook
-import CustomHeader from '../components/CustomHeader'; // Import CustomHeader component
-import galleryIcon from '../assets/gallery.png'; // Import gallery icon
-import detailsIcon from '../assets/details.png'; // Import details icon
+import CustomHeader from '../components/CustomHeader'; 
+import galleryIcon from '../assets/gallery.png'; 
+import {useNavigation} from '@react-navigation/native';
 
 const GalleryScreen = () => {
   const [selectedImage, setSelectedImage] = useState(null);
-  const navigation = useNavigation(); // Initialize navigation object
+  const navigation = useNavigation();
 
-  const selectImage = () => {
+  const openImageLibrary = () => {
     const options = {
       mediaType: 'photo',
       quality: 0.5,
@@ -21,41 +20,21 @@ const GalleryScreen = () => {
     launchImageLibrary(options, response => {
       console.log('Response = ', response);
 
-      if (response.didCancel) {
-        console.log('User cancelled selecting an image');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else {
+      if (!response.didCancel && !response.error) {
         const source = {uri: response.assets[0].uri};
         setSelectedImage(source);
+        navigation.navigate('Results', {image: source}); // Navigate to Results screen with selected image
       }
     });
   };
 
-  const showResults = () => {
-    // Navigate to the result screen
-    navigation.navigate('Results', {image: selectedImage});
-  };
-
   return (
     <View style={styles.container}>
-      {/* Use CustomHeader component with title="Gallery" and showBackButton={true} */}
-      <CustomHeader
-        title="Gallery"
-        showBackButton={true}
-        navigation={navigation}
-      />
-      <TouchableOpacity style={styles.button} onPress={selectImage}>
+      <CustomHeader title="Gallery" showBackButton={true} navigation={navigation} />
+      <TouchableOpacity style={styles.button} onPress={openImageLibrary}>
         <Image source={galleryIcon} style={styles.buttonIcon} />
-        <Text style={styles.buttonText}>Choose Image from Gallery</Text>
+        <Text style={styles.buttonText}>Open Gallery</Text>
       </TouchableOpacity>
-      {selectedImage && <Image source={selectedImage} style={styles.image} />}
-      {selectedImage && (
-        <TouchableOpacity style={styles.button} onPress={showResults}>
-          <Image source={detailsIcon} style={styles.buttonIcon} />
-          <Text style={styles.buttonText}>Show Classification Results</Text>
-        </TouchableOpacity>
-      )}
     </View>
   );
 };
@@ -69,26 +48,19 @@ const styles = StyleSheet.create({
   button: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#393737',
+    backgroundColor: '#DDDDDD',
     padding: 10,
-    borderRadius: 20,
-    marginTop: 60,
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    marginLeft: 10,
+    borderRadius: 5,
   },
   buttonIcon: {
     width: 24,
     height: 24,
-    tintColor: '#FFFFFF',
+    marginRight: 10,
   },
-  image: {
-    marginTop: 20,
-    width: 200,
-    height: 200,
+  buttonText: {
+    fontSize: 16,
   },
 });
 
 export default GalleryScreen;
+
