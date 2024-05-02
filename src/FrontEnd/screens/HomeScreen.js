@@ -1,16 +1,34 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
-import {launchImageLibrary} from 'react-native-image-picker';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import CustomHeader from '../components/CustomHeader'; // Import CustomHeader component
 import cameraIcon from '../assets/cam.png';
 import galleryIcon from '../assets/gallery1.png';
 import firstAidIcon from '../assets/first-aid1.png';
 import hospitalIcon from '../assets/map1.png';
 import snakeCatcherIcon from '../assets/snake1.png';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
+
+  const openCameraAndNavigate = () => {
+    const options = {
+      mediaType: 'photo',
+      quality: 0.5,
+      maxWidth: 800,
+      maxHeight: 600,
+    };
+
+    launchCamera(options, response => {
+      console.log('Response = ', response);
+
+      if (!response.didCancel && !response.error) {
+        const source = { uri: response.assets[0].uri };
+        navigation.navigate('Results', { image: source }); // Navigate to Results screen with taken picture
+      }
+    });
+  };
 
   const openGalleryAndNavigate = () => {
     const options = {
@@ -24,8 +42,8 @@ const HomeScreen = () => {
       console.log('Response = ', response);
 
       if (!response.didCancel && !response.error) {
-        const source = {uri: response.assets[0].uri};
-        navigation.navigate('Results', {image: source}); // Navigate to Results screen with selected image
+        const source = { uri: response.assets[0].uri };
+        navigation.navigate('Results', { image: source }); // Navigate to Results screen with selected image
       }
     });
   };
@@ -34,7 +52,7 @@ const HomeScreen = () => {
     {
       title: 'Take a Photo',
       icon: cameraIcon,
-      onPress: () => navigation.navigate('Camera'),
+      onPress: openCameraAndNavigate, // Updated onPress function to open camera and navigate
     },
     {
       title: 'Photo Gallery',
@@ -84,7 +102,6 @@ const HomeScreen = () => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
