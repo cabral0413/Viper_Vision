@@ -1,67 +1,77 @@
-import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, Text, StyleSheet} from 'react-native';
+import MapView, {Marker} from 'react-native-maps';
+import Geolocation from 'react-native-geolocation-service';
 
-const HosScreen = ({navigation}) => {};
-export default HosScreen;
-
-/*import React, {useState, useEffect} from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import Geolocation from '@react-native-community/geolocation'; // Import Geolocation library
-
-const NearestHospitalScreen = () => {
-  const [userLocation, setUserLocation] = useState(null);
-  const [nearestHospitals, setNearestHospitals] = useState([]);
+const HosScreen = () => {
+  const [currentLocation, setCurrentLocation] = useState(null);
+  const [nearbyHospitals, setNearbyHospitals] = useState([]);
 
   useEffect(() => {
-    // Fetch user's current location
+    getCurrentLocation();
+  }, []);
+
+  // Function to get the current location
+  const getCurrentLocation = () => {
     Geolocation.getCurrentPosition(
       position => {
         const {latitude, longitude} = position.coords;
-        setUserLocation({latitude, longitude});
-        // Call function to find nearest hospitals
-        findNearestHospitals(latitude, longitude);
+        setCurrentLocation({latitude, longitude});
       },
       error => {
-        console.log('Error getting user location:', error);
+        console.log('Error getting location:', error);
       },
-      {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
     );
-  }, []);
-
-  const findNearestHospitals = async (latitude, longitude) => {
-    // Call API or service to find nearest hospitals based on latitude and longitude
-    // Update nearestHospitals state with the fetched data
-    const hospitals = await fetchNearestHospitals(latitude, longitude);
-    setNearestHospitals(hospitals);
   };
 
-  const fetchNearestHospitals = async (latitude, longitude) => {
-    // Implement logic to fetch nearest hospitals from API or service
-    // You can use libraries like axios to make HTTP requests
-    // Example: const response = await axios.get(`API_ENDPOINT?lat=${latitude}&lon=${longitude}&type=hospital`);
-    // Parse the response and return the list of hospitals
-    return []; // Dummy implementation
-  };
-
-  const handleHospitalPress = hospital => {
-    // Implement navigation to hospital details screen
-    // You can pass the selected hospital data as navigation params
+  // Function to search for nearby hospitals
+  const searchNearbyHospitals = () => {
+    // Implement code to fetch nearby hospitals based on currentLocation
+    // You can use Google Places API or a similar service for this purpose
+    // Update nearbyHospitals state with the fetched data
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Nearest Hospitals</Text>
-      {nearestHospitals.map((hospital, index) => (
-        <TouchableOpacity
-          key={index}
-          style={styles.hospitalItem}
-          onPress={() => handleHospitalPress(hospital)}>
-          <Text>{hospital.name}</Text>
-          <Text>{hospital.contactNumber}</Text>
-          <Text>{hospital.distance} km</Text>
-    
-        </TouchableOpacity>
-      ))}
+      {currentLocation && (
+        <MapView
+          style={styles.map}
+          initialRegion={{
+            latitude: currentLocation.latitude,
+            longitude: currentLocation.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}>
+          <Marker
+            coordinate={{
+              latitude: currentLocation.latitude,
+              longitude: currentLocation.longitude,
+            }}
+            title="You are here"
+          />
+          {/* Add markers for nearby hospitals */}
+          {/* Example: */}
+          {/* <Marker
+            coordinate={{
+              latitude: hospital.latitude,
+              longitude: hospital.longitude,
+            }}
+            title={hospital.name}
+            description={`Distance: ${hospital.distance} km`}
+          /> */}
+        </MapView>
+      )}
+      <Text style={styles.heading}>Nearby Hospitals</Text>
+      {/* Display nearby hospitals list */}
+      {/* Example: */}
+      {/* <FlatList
+        data={nearbyHospitals}
+        renderItem={({ item }) => (
+          <Text>{`${item.name} - Distance: ${item.distance} km`}</Text>
+        )}
+        keyExtractor={item => item.id.toString()}
+      /> */}
     </View>
   );
 };
@@ -69,20 +79,17 @@ const NearestHospitalScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     alignItems: 'center',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
+  map: {
+    width: '100%',
+    height: '50%',
   },
-  hospitalItem: {
-    backgroundColor: '#ECECEC',
-    padding: 10,
-    marginVertical: 5,
-    borderRadius: 5,
+  heading: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginVertical: 10,
   },
 });
 
-export default NearestHospitalScreen;*/
+export default HosScreen;

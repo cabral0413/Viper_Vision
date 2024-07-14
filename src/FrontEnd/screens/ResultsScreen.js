@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 import CustomHeader from '../components/CustomHeader'; // Import CustomHeader component
 
-const ResultsScreen = ({ route }) => {
-  const { image } = route.params; // Use optional chaining and default empty object
+
+const ResultsScreen = ({navigation, route}) => {
+  const {image} = route.params; // Use optional chaining and default empty object
   const [results, setResults] = useState(null); // State to store classification results
   const [loading, setLoading] = useState(true); // State to track loading state
   const [fetchError, setFetchError] = useState(null); // State to track fetch errors
@@ -38,7 +39,7 @@ const ResultsScreen = ({ route }) => {
           type: 'image/jpeg',
           name: 'image.jpg',
         });
-        const response = await fetch('http://192.168.8.197:5000/classify', {
+        const response = await fetch('http://192.168.1.2:5000/classify', {
           method: 'POST',
           headers: {
             'Content-Type': 'multipart/form-data',
@@ -66,7 +67,11 @@ const ResultsScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <CustomHeader title="Results" showBackButton={true} />
+      <CustomHeader
+        title="Results"
+        navigation={navigation}
+        showBackButton={true} // Update onPressBack to use navigation.goBack()
+      />
       <Text style={styles.heading}>Classification Results</Text>
       {loading ? (
         <Text style={styles.Loader}>Loading results...</Text>
@@ -75,11 +80,18 @@ const ResultsScreen = ({ route }) => {
       ) : results && results.length > 0 ? (
         results.map((result, index) => (
           <View key={index} style={styles.resultContainer}>
-            <Image source={getImageSource(result.class)} style={styles.snakeImage} />
+            <Image
+              source={getImageSource(result.class)}
+              style={styles.snakeImage}
+            />
             <View style={styles.resultContent}>
               <Text style={styles.snakeName}>Snake Name: {result.class}</Text>
-              <Text style={styles.accuracy}>Probability: {result.probability}</Text>
-              <Text style={styles.venomStatus}>Venom Status: {result.venom_status}</Text>
+              <Text style={styles.accuracy}>
+                Probability: {result.probability}
+              </Text>
+              <Text style={styles.venomStatus}>
+                Venom Status: {result.venom_status}
+              </Text>
               <View style={styles.buttonContainer}>
                 <TouchableOpacity style={styles.button}>
                   <Text style={styles.buttonText}>More Details</Text>
@@ -162,8 +174,8 @@ const styles = StyleSheet.create({
   Loader: {
     color: '#000',
     marginTop: 20,
+    marginLeft: 22,
   },
 });
-
 
 export default ResultsScreen;

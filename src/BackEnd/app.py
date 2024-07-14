@@ -43,11 +43,11 @@ def get_venom_status(class_name):
         return 'Venomous'
     elif class_name == 'Python':
         return 'Venomous'
-    elif class_name == 'Merremâs Hump â Nosed Viper':
+    elif class_name == 'Hump Nosed Viper':
         return 'Venomous'
     elif class_name == 'Green Vine Snake':
         return 'Non-venomous'
-    elif class_name == 'Russellâs Viper':
+    elif class_name == 'Russells Viper':
         return 'Venomous'
     elif class_name == 'Indian Cobra':
         return 'Venomous'
