@@ -55,4 +55,4 @@ def get_venom_status(class_name):
         return 'Unknown'
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=1, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
