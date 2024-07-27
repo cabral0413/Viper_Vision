@@ -39,7 +39,7 @@ const ResultsScreen = ({navigation, route}) => {
           type: 'image/jpeg',
           name: 'image.jpg',
         });
-        const response = await fetch('http://192.168.1.2:5000/classify', {
+        const response = await fetch('http://192.168.1.4:5000/classify', {
           method: 'POST',
           headers: {
             'Content-Type': 'multipart/form-data',

@@ -211,52 +211,54 @@ const SnakeCatcherScreen = ({navigation}) => {
         navigation={navigation}
         showBackButton={true}
       />
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search District"
-          value={searchText}
-          onChangeText={handleSearchTextChange}
-        />
-        <TouchableOpacity
-          onPress={clearSearchText}
-          style={styles.clearIconContainer}>
-          <Image
-            source={require('../assets/icons8-search.gif')}
-            style={styles.searchIcon}
+      <View style={styles.mainContent}>
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search District"
+            value={searchText}
+            onChangeText={handleSearchTextChange}
           />
-        </TouchableOpacity>
-      </View>
-      <FlatList
-        style={styles.suggestionsList}
-        data={districts}
-        renderItem={({item}) => (
-          <TouchableOpacity onPress={() => handleDistrictSelect(item)}>
-            <Text style={styles.districtItem}>{item}</Text>
+          <TouchableOpacity
+            onPress={clearSearchText}
+            style={styles.clearIconContainer}>
+            <Image
+              source={require('../assets/icons8-search.gif')}
+              style={styles.searchIcon}
+            />
           </TouchableOpacity>
-        )}
-        keyExtractor={item => item}
-      />
-      {selectedDistrict && (
-        <View style={styles.selectedDistrictContainer}>
-          <Text style={styles.selectedDistrictText}>
-            Selected District: {selectedDistrict}
-          </Text>
-          <Text style={styles.snakeCatcherHeader}>Snake Catchers:</Text>
-          <FlatList
-            data={snakeCatchers}
-            renderItem={({item}) => (
-              <View style={styles.snakeCatcherItem}>
-                <Text style={styles.snakeCatcherText}>Name: {item.name}</Text>
-                <Text style={styles.snakeCatcherText}>
-                  Contact: {item.contact}
-                </Text>
-              </View>
-            )}
-            keyExtractor={(item, index) => index.toString()}
-          />
         </View>
-      )}
+        <FlatList
+          style={styles.suggestionsList}
+          data={districts}
+          renderItem={({item}) => (
+            <TouchableOpacity onPress={() => handleDistrictSelect(item)}>
+              <Text style={styles.districtItem}>{item}</Text>
+            </TouchableOpacity>
+          )}
+          keyExtractor={item => item}
+        />
+        {selectedDistrict && (
+          <View style={styles.selectedDistrictContainer}>
+            <Text style={styles.selectedDistrictText}>
+              Selected District: {selectedDistrict}
+            </Text>
+            <Text style={styles.snakeCatcherHeader}>Snake Catchers:</Text>
+            <FlatList
+              data={snakeCatchers}
+              renderItem={({item}) => (
+                <View style={styles.snakeCatcherItem}>
+                  <Text style={styles.snakeCatcherText}>Name: {item.name}</Text>
+                  <Text style={styles.snakeCatcherText}>
+                    Contact: {item.contact}
+                  </Text>
+                </View>
+              )}
+              keyExtractor={(item, index) => index.toString()}
+            />
+          </View>
+        )}
+      </View>
     </View>
   );
 };
@@ -264,23 +266,27 @@ const SnakeCatcherScreen = ({navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    //padding: 20,
-    backgroundColor: 'white', // Set background color to black
+    backgroundColor: 'white',
+  },
+  mainContent: {
+    flex: 1,
+    padding: 20, // Add padding around the main content
+    marginTop: 10, // Add margin to account for the header height
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
-    position: 'relative', // Make the container relative for positioning
-    paddingHorizontal: 30, // Add horizontal padding
-    borderRadius: 20, // Add border radius
-    borderWidth: 1, // Add border width
-    borderColor: 'gray', // Set border color
+    position: 'relative',
+    paddingHorizontal: 30,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'gray',
   },
   searchInput: {
     flex: 1,
     height: 40,
-    color: 'black', // Set text color to white
+    color: 'black',
   },
   clearIconContainer: {
     position: 'absolute',
@@ -293,7 +299,7 @@ const styles = StyleSheet.create({
   searchIcon: {
     width: 20,
     height: 20,
-    resizeMode: 'contain', // Make sure the image fits the container
+    resizeMode: 'contain',
   },
   suggestionsList: {
     maxHeight: 200,
@@ -303,7 +309,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderBottomWidth: 1,
     borderBottomColor: 'lightgray',
-    color: 'black', // Set text color to white
+    color: 'black',
   },
   selectedDistrictContainer: {
     marginTop: 20,
@@ -316,7 +322,7 @@ const styles = StyleSheet.create({
   snakeCatcherHeader: {
     marginTop: 10,
     fontWeight: 'bold',
-    color: 'black', // Set text color to white
+    color: 'black',
     marginLeft: 15,
   },
   snakeCatcherItem: {
@@ -324,13 +330,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderBottomWidth: 1,
     borderBottomColor: 'lightgray',
-    borderColor: 'white', // Set border color to white
-    color: 'black', // Set text color to white
+    borderColor: 'white',
+    color: 'black',
     marginLeft: 30,
   },
-  // Add a new style for the text color
   snakeCatcherText: {
-    color: 'black', // Set text color to white
+    color: 'black',
   },
 });
 
