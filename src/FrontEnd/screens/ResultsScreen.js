@@ -1,20 +1,18 @@
-import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
-import CustomHeader from '../components/CustomHeader'; // Import CustomHeader component
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import CustomHeader from '../components/CustomHeader';
 
+const ResultsScreen = ({ navigation, route }) => {
+  const { image } = route.params;
+  const [results, setResults] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
 
-const ResultsScreen = ({navigation, route}) => {
-  const {image} = route.params; // Use optional chaining and default empty object
-  const [results, setResults] = useState(null); // State to store classification results
-  const [loading, setLoading] = useState(true); // State to track loading state
-  const [fetchError, setFetchError] = useState(null); // State to track fetch errors
-
-  // Function to get the image source based on snake class name
   const getImageSource = className => {
     switch (className) {
       case 'Common Indian Krait':
         return require('../assets/krait.jpg');
-      case 'Merremâs Hump â Nosed Viper':
+      case 'Hump Nosed Viper':
         return require('../assets/PitViper.jpeg');
       case 'Indian Cobra':
         return require('../assets/cobra.jpg');
@@ -22,62 +20,66 @@ const ResultsScreen = ({navigation, route}) => {
         return require('../assets/python.jpeg');
       case 'Green Vine Snake':
         return require('../assets/VineSnake.jpg');
-      case 'Russellâs Viper':
+      case 'Russells Viper':
         return require('../assets/Russels_Viper.jpg');
       default:
-        return null; // Return null if no image found
+        return null;
     }
   };
 
   useEffect(() => {
     const fetchResults = async () => {
-      try {
-        // Send the image to the backend for classification
-        const formData = new FormData();
-        formData.append('image', {
-          uri: image.uri,
-          type: 'image/jpeg',
-          name: 'image.jpg',
-        });
-        const response = await fetch('http://192.168.1.4:5000/classify', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-          body: formData,
-        });
-        const data = await response.json();
-        console.log('API Response:', data); // Log the API response
-        if (response.ok) {
-          setResults(data.top_predictions); // Set the classification results
-        } else {
-          setFetchError(data.message || 'Failed to fetch results.');
+        try {
+            const formData = new FormData();
+            formData.append('image', {
+                uri: image.uri,
+                type: 'image/jpeg',
+                name: 'image.jpg',
+            });
+
+            const response = await fetch('http://192.168.1.9:5000/classify', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+                body: formData,
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Server Error:', errorText);
+                setFetchError('Failed to fetch results.');
+                return;
+            }
+
+            const data = await response.json();
+            console.log('API Response:', data); // Log the API response for debugging
+            setResults(data.predictions || []); // Ensure this matches the API response structure
+
+        } catch (error) {
+            console.error('Error fetching results:', error);
+            setFetchError('Error fetching results. Please try again.');
+        } finally {
+            setLoading(false);
         }
-      } catch (error) {
-        console.error('Error fetching results:', error);
-        setFetchError('Error fetching results. Please try again.');
-      } finally {
-        setLoading(false); // Set loading state to false
-      }
     };
 
-    // Fetch classification results when component mounts
     fetchResults();
-  }, [image]); // Include image as a dependency
+  }, [image]);
 
   return (
     <View style={styles.container}>
       <CustomHeader
         title="Results"
         navigation={navigation}
-        showBackButton={true} // Update onPressBack to use navigation.goBack()
+        showBackButton={true}
       />
       <Text style={styles.heading}>Classification Results</Text>
       {loading ? (
         <Text style={styles.Loader}>Loading results...</Text>
       ) : fetchError ? (
         <Text style={styles.errorText}>{fetchError}</Text>
-      ) : results && results.length > 0 ? (
+      ) : results.length > 0 ? (  // Check if the predictions array has items
         results.map((result, index) => (
           <View key={index} style={styles.resultContainer}>
             <Image
@@ -86,12 +88,8 @@ const ResultsScreen = ({navigation, route}) => {
             />
             <View style={styles.resultContent}>
               <Text style={styles.snakeName}>Snake Name: {result.class}</Text>
-              <Text style={styles.accuracy}>
-                Probability: {result.probability}
-              </Text>
-              <Text style={styles.venomStatus}>
-                Venom Status: {result.venom_status}
-              </Text>
+              <Text style={styles.accuracy}>Probability: {result.probability}</Text>
+              <Text style={styles.venomStatus}>Venom Status: {result.venom_status}</Text>
               <View style={styles.buttonContainer}>
                 <TouchableOpacity style={styles.button}>
                   <Text style={styles.buttonText}>More Details</Text>
