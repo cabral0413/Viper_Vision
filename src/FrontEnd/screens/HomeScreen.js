@@ -1,13 +1,13 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
-import CustomHeader from '../components/CustomHeader'; // Import CustomHeader component
+import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
+import CustomHeader from '../components/CustomHeader';
 import cameraIcon from '../assets/cam.png';
 import galleryIcon from '../assets/gallery1.png';
 import firstAidIcon from '../assets/first-aid1.png';
 import hospitalIcon from '../assets/map1.png';
 import snakeCatcherIcon from '../assets/snake1.png';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -21,11 +21,9 @@ const HomeScreen = () => {
     };
 
     launchCamera(options, response => {
-      console.log('Response = ', response);
-
       if (!response.didCancel && !response.error) {
-        const source = { uri: response.assets[0].uri };
-        navigation.navigate('Results', { image: source }); // Navigate to Results screen with taken picture
+        const source = {uri: response.assets[0].uri};
+        navigation.navigate('ResultsScreen', {image: source});
       }
     });
   };
@@ -39,11 +37,9 @@ const HomeScreen = () => {
     };
 
     launchImageLibrary(options, response => {
-      console.log('Response = ', response);
-
       if (!response.didCancel && !response.error) {
-        const source = { uri: response.assets[0].uri };
-        navigation.navigate('Results', { image: source }); // Navigate to Results screen with selected image
+        const source = {uri: response.assets[0].uri};
+        navigation.navigate('ResultsScreen', {image: source});
       }
     });
   };
@@ -52,27 +48,22 @@ const HomeScreen = () => {
     {
       title: 'Take a Photo',
       icon: cameraIcon,
-      onPress: openCameraAndNavigate, // Updated onPress function to open camera and navigate
+      onPress: openCameraAndNavigate,
     },
     {
       title: 'Photo Gallery',
       icon: galleryIcon,
-      onPress: openGalleryAndNavigate, // Updated onPress function to open gallery and navigate
+      onPress: openGalleryAndNavigate,
     },
     {
       title: 'First Aid',
       icon: firstAidIcon,
-      onPress: () => navigation.navigate('FirstAid'),
-    },
-    {
-      title: 'Nearest Hospital',
-      icon: hospitalIcon,
-      onPress: () => navigation.navigate('Hospital'),
+      onPress: () => navigation.navigate('FirstAidScreen'),
     },
     {
       title: 'Snake Catchers',
       icon: snakeCatcherIcon,
-      onPress: () => navigation.navigate('SnakeCatcher'),
+      onPress: () => navigation.navigate('SnakeCatcherScreen'),
     },
   ];
 
@@ -82,7 +73,10 @@ const HomeScreen = () => {
       style={styles.featureContainer}
       onPress={feature.onPress}>
       <View style={styles.featureBox}>
-        <Image source={feature.icon} style={styles.featureIcon} />
+        <Image
+          source={feature.icon}
+          style={[styles.featureIcon, {tintColor: 'black'}]}
+        />
         <Text style={styles.featureTitle}>{feature.title}</Text>
       </View>
     </TouchableOpacity>
@@ -90,11 +84,8 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* Use CustomHeader component with title="Viper Vision" and showBackButton={false} */}
-      <CustomHeader
-        title="Viper Vision"
-        showBackButton={false}
-      />
+      {/* Pass null to the title prop to remove the title */}
+      <CustomHeader title={null} isHomeScreen={true} />
       <Text style={styles.heading}>Welcome to Snake Identifier</Text>
       <View style={styles.featuresContainer}>
         {features.map((feature, index) => renderFeature(feature, index))}
@@ -102,46 +93,53 @@ const HomeScreen = () => {
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#f5f5f5',
   },
   heading: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
+    textAlign: 'center',
     marginVertical: 20,
-    marginLeft: 20,
+    color: '#333',
   },
   featuresContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-around',
-    paddingHorizontal: 10,
-  },
-  featureContainer: {
-    width: '45%',
-    marginVertical: 10,
-    borderRadius: 20,
-    overflow: 'hidden',
-    elevation: 3,
-    backgroundColor: '#393737',
-  },
-  featureBox: {
-    height: 150,
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 10,
+  },
+  featureContainer: {
+    marginBottom: 20,
+    width: '80%',
+  },
+  featureBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: 15,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 2,
   },
   featureIcon: {
-    width: 50,
-    height: 50,
-    marginBottom: 10,
+    width: 40,
+    height: 40,
+    marginRight: 20,
+    tintColor: 'black', // Set icon color to black
   },
   featureTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: '#333',
   },
 });
 

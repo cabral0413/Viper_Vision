@@ -1,27 +1,21 @@
 import React, {useEffect} from 'react';
 import {View, Text, Image, StyleSheet, ActivityIndicator} from 'react-native';
-import {useNavigation} from '@react-navigation/native'; // Import useNavigation hook
 
-const SplashScreen = () => {
-  const navigation = useNavigation(); // Get navigation object using useNavigation hook
-
+const SplashScreen = ({navigation}) => {
   useEffect(() => {
-    // Navigate to HomeScreen after 3 seconds
     const timer = setTimeout(() => {
-      navigation.replace('HomeScreen');
-    }, 3000);
-
+      navigation.replace('HomeScreen'); // Navigate to 'HomeScreen' after splash
+    }, 3000); // 3 seconds delay
     return () => clearTimeout(timer);
-  }, [navigation]); // Include navigation in the dependency array
+  }, [navigation]);
 
   return (
     <View style={styles.container}>
       <View style={styles.contentContainer}>
         <Image
-          source={require('./snake_icon.png')} // Replace with your snake icon
+          source={require('../assets/snake.jpg')} // Adjust the path as needed
           style={styles.snakeIcon}
         />
-        <Text style={styles.appName}>Viper Vision</Text>
         <ActivityIndicator size="large" color="#4682B4" style={styles.loader} />
       </View>
     </View>
@@ -31,22 +25,16 @@ const SplashScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF', // Plain color background
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#000',
   },
   contentContainer: {
     alignItems: 'center',
   },
   snakeIcon: {
-    width: 100,
-    height: 100,
-    marginBottom: 20,
-  },
-  appName: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
+    width: 200,
+    height: 200,
   },
   loader: {
     marginTop: 20,

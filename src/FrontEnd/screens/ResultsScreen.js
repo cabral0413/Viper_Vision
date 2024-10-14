@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import CustomHeader from '../components/CustomHeader';
+import React, {useEffect, useState} from 'react';
+import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 
-const ResultsScreen = ({ navigation, route }) => {
-  const { image } = route.params;
+const ResultsScreen = ({navigation, route}) => {
+  const {image} = route.params;
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(null);
@@ -29,39 +28,38 @@ const ResultsScreen = ({ navigation, route }) => {
 
   useEffect(() => {
     const fetchResults = async () => {
-        try {
-            const formData = new FormData();
-            formData.append('image', {
-                uri: image.uri,
-                type: 'image/jpeg',
-                name: 'image.jpg',
-            });
+      try {
+        const formData = new FormData();
+        formData.append('image', {
+          uri: image.uri,
+          type: 'image/jpeg',
+          name: 'image.jpg',
+        });
 
-            const response = await fetch('http://192.168.1.9:5000/classify', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-                body: formData,
-            });
+        const response = await fetch('http://192.168.1.3:5000/classify', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          body: formData,
+        });
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('Server Error:', errorText);
-                setFetchError('Failed to fetch results.');
-                return;
-            }
-
-            const data = await response.json();
-            console.log('API Response:', data); // Log the API response for debugging
-            setResults(data.predictions || []); // Ensure this matches the API response structure
-
-        } catch (error) {
-            console.error('Error fetching results:', error);
-            setFetchError('Error fetching results. Please try again.');
-        } finally {
-            setLoading(false);
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Server Error:', errorText);
+          setFetchError('Failed to fetch results.');
+          return;
         }
+
+        const data = await response.json();
+        console.log('API Response:', data); // Log the API response for debugging
+        setResults(data.predictions || []); // Ensure this matches the API response structure
+      } catch (error) {
+        console.error('Error fetching results:', error);
+        setFetchError('Error fetching results. Please try again.');
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchResults();
@@ -69,17 +67,12 @@ const ResultsScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <CustomHeader
-        title="Results"
-        navigation={navigation}
-        showBackButton={true}
-      />
       <Text style={styles.heading}>Classification Results</Text>
       {loading ? (
         <Text style={styles.Loader}>Loading results...</Text>
       ) : fetchError ? (
         <Text style={styles.errorText}>{fetchError}</Text>
-      ) : results.length > 0 ? (  // Check if the predictions array has items
+      ) : results.length > 0 ? (
         results.map((result, index) => (
           <View key={index} style={styles.resultContainer}>
             <Image
@@ -88,8 +81,12 @@ const ResultsScreen = ({ navigation, route }) => {
             />
             <View style={styles.resultContent}>
               <Text style={styles.snakeName}>Snake Name: {result.class}</Text>
-              <Text style={styles.accuracy}>Probability: {result.probability}</Text>
-              <Text style={styles.venomStatus}>Venom Status: {result.venom_status}</Text>
+              <Text style={styles.accuracy}>
+                Probability: {result.probability}
+              </Text>
+              <Text style={styles.venomStatus}>
+                Venom Status: {result.venom_status}
+              </Text>
               <View style={styles.buttonContainer}>
                 <TouchableOpacity style={styles.button}>
                   <Text style={styles.buttonText}>More Details</Text>
@@ -111,7 +108,6 @@ const ResultsScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    //padding: 20,
   },
   heading: {
     fontSize: 20,
@@ -173,6 +169,15 @@ const styles = StyleSheet.create({
     color: '#000',
     marginTop: 20,
     marginLeft: 22,
+  },
+  // New errorText style for better visibility
+  errorText: {
+    color: 'red', // Change to a contrasting color
+    fontSize: 16,
+   // fontWeight: 'bold',
+    textAlign: 'center', // Center align the text
+    marginTop: 20,
+    marginHorizontal: 20, // Add horizontal margin for spacing from the sides
   },
 });
 
