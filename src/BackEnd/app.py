@@ -2,15 +2,15 @@ from flask import Flask, request, jsonify
 from ultralytics import YOLO
 from PIL import Image, ImageOps
 from flask_cors import CORS
-import io
-import os
+import os #os instaal
+
 
 app = Flask(__name__)
 CORS(app)
 
 # Load the models once during startup
-yolo_model = YOLO('models/best.pt')  # YOLO model for object detection and cropping
-classification_model = YOLO('models/bestc.pt')  # Model for classification
+yolo_model = YOLO('best.pt')  # YOLO model for object detection and cropping
+classification_model = YOLO('bestc.pt')  # Model for classification
 
 CONFIDENCE_THRESHOLD = 0.5  # Set a confidence threshold for valid detections
 
@@ -28,7 +28,7 @@ def predict():
 
         # Check if any detections are made
         if len(detection_results) == 0 or len(detection_results[0].boxes) == 0:
-            return jsonify({'message': 'No objects detected in the image.'}), 200
+            return jsonify({'message': 'No snakes detected in the image.'}), 200
 
         # Filter to keep only the most confident detection above threshold
         best_box = max(detection_results[0].boxes, key=lambda box: box.conf)
@@ -90,6 +90,18 @@ def get_venom_status(class_name):
     }
     return venom_status_map.get(class_name, 'Unknown')
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
-    
+
+# Health check route (useful for debugging Docker deployment)
+@app.route("/health", methods=["GET"])
+def health_check():
+    return "App is running", 200
+
+# Main route
+@app.route("/", methods=["GET"])
+def index():
+    return "Welcome to the snake detection and classification app!", 200
+
+if __name__ == "__main__":
+    # Get port from environment variable or use default 5000
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)

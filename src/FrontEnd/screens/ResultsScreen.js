@@ -36,7 +36,7 @@ const ResultsScreen = ({navigation, route}) => {
           name: 'image.jpg',
         });
 
-        const response = await fetch('http://192.168.1.4:5000/classify', {
+        const response = await fetch('http://54.172.177.217:5000/classify', {
           method: 'POST',
           headers: {
             'Content-Type': 'multipart/form-data',
@@ -47,21 +47,24 @@ const ResultsScreen = ({navigation, route}) => {
         if (!response.ok) {
           const errorText = await response.text();
           console.error('Server Error:', errorText);
-          setFetchError('Failed to fetch results.');
+          setFetchError(
+            `Failed to fetch results: ${response.status} ${response.statusText}`,
+          );
           return;
         }
 
         const data = await response.json();
-        console.log('API Response:', data); // Log the API response for debugging
-        setResults(data.predictions || []); // Ensure this matches the API response structure
+        console.log('API Response:', data);
+        setResults(data.predictions || []);
       } catch (error) {
         console.error('Error fetching results:', error);
-        setFetchError('Error fetching results. Please try again.');
+        setFetchError(
+          `Error fetching results. ${error.message || 'Please try again.'}`,
+        );
       } finally {
         setLoading(false);
       }
     };
-
     fetchResults();
   }, [image]);
 
@@ -99,7 +102,7 @@ const ResultsScreen = ({navigation, route}) => {
           </View>
         ))
       ) : (
-        <Text style={styles.Loader}>No results found.</Text>
+        <Text style={styles.Loader}>No snakes found in the image.</Text>
       )}
     </View>
   );
@@ -174,7 +177,7 @@ const styles = StyleSheet.create({
   errorText: {
     color: 'red', // Change to a contrasting color
     fontSize: 16,
-   // fontWeight: 'bold',
+    // fontWeight: 'bold',
     textAlign: 'center', // Center align the text
     marginTop: 20,
     marginHorizontal: 20, // Add horizontal margin for spacing from the sides

@@ -1,8 +1,8 @@
 Flask==3.0.3
 Flask-Cors==5.0.0
 opencv-python-headless
-opencv-contrib-python
---extra-index-url https://download.pytorch.org/whl/cpu
-ultralytics
 Pillow==11.0.0
-
+--extra-index-url https://download.pytorch.org/whl/cpu
+ultralytics==8.2.9 # Specify the version to avoid larger GPU-specific files
+gunicorn
+numpy
